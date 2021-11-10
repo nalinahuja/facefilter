@@ -7,7 +7,22 @@ Milestones:
     The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
 
     Dataset:
-      
+
+
+    Status:
+      Data Loading: TESTED
+      Data Preprocessing: UNTESTED
+
+      Model Training: INCOMPLETE
+      Model Validation: INCOMPLETE
+
+      Accuracy - TBD%
+
+  Facial Mapping Model:
+    The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
+
+    Dataset:
+      https://www.kaggle.com/c/facial-keypoints-detection
 
     Status:
       Data Loading: INCOMPLETE
@@ -16,4 +31,4 @@ Milestones:
       Model Training: INCOMPLETE
       Model Validation: INCOMPLETE
 
-      Accuracy - TBD
+      Accuracy - TBD%

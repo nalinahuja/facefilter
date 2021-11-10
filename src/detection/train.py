@@ -135,22 +135,15 @@ def encode_preds(preds):
 # End Utility Functions------------------------------------------------------------------------------------------------------------------------------------------------
 
 def get_data():
+    # Check For Data Path
+    if (not(os.path.exists(TF_DATA_PATH))):
+        # Raise Error
+        raise FileNotFoundError("data path missing")
+
     # Display Status
     print(CR + "Loading dataset...", end = "")
 
-    # Check For Spam Data File
-    if (not(os.path.exists(SPAM_FILE))):
-        # Raise Error
-        raise FileNotFoundError("spam data file missing")
-
-    # TODO, get data
-
-    # Read Spam Data Into Memory
-    spam_df = pd.read_csv(SPAM_FILE)
-
-    # Extract Columnar Spam Data
-    x = spam_df["Message"].tolist()
-    y = spam_df["Category"].tolist()
+    # TODO, get data 
 
     # Split Columnar Spam Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)
