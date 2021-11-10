@@ -1,0 +1,10 @@
+# File Patterns
+._*
+~$*
+
+# System Files
+.DS_Store
+.localized
+
+# Workspace Files
+data
