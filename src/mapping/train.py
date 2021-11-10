@@ -53,6 +53,9 @@ random.seed(SEED_VALUE)
 np.random.seed(SEED_VALUE)
 tf.random.set_seed(SEED_VALUE)
 
+# TensorFlow Settings
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
 # End Module Imports----------------------------------------------------------------------------------------------------------------------------------------------------
 
 def build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS, lr = TF_LEARNING_RATE, drop_out = True, drop_rate = TF_DROP_OUT):
@@ -143,7 +146,9 @@ def get_data():
     # Display Status
     print(CR + "Loading dataset...", end = "")
 
-    # TODO, get data
+    # TODO, load data from TF_DATA_PATH
+    x = type: ndarray
+    y = type: bool
 
     # Split Columnar Spam Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)
@@ -171,9 +176,33 @@ def process_data(raw):
     # Unpack Data From Raw Input
     ((x_train, y_train), (x_test, y_test)) = raw
 
-    # Reshape Input Data To Fit Convolutional Networks
-    x_train = x_train.reshape((x_train.shape[0], INPUT_X, INPUT_Y, INPUT_Z))
-    x_test = x_test.reshape((x_test.shape[0], INPUT_X, INPUT_Y, INPUT_Z))
+    # Process Training Input Images
+    for i, img in enumerate(x_train):
+        # Convert Image Data Type
+        img = img.astype("float64")
+
+        # Resize Training Input Image To Specified Dimensions
+        img = cv.resize(img, dsize = (INPUT_X, INPUT_Y))
+
+        # Add Dimension To Numpy Array
+        img = np.expand_dims(img, axis = 0)
+
+        # Update Training Data Point
+        x_train[i] = img
+
+    # Process Testing Input Images
+    for i, img in enumerate(x_test):
+        # Convert Image Data Type
+        img = img.astype("float64")
+
+        # Resize Testing Input Image To Specified Dimensions
+        img = cv.resize(img, dsize = (INPUT_X, INPUT_Y))
+
+        # Add Dimension To Numpy Array
+        img = np.expand_dims(img, axis = 0)
+
+        # Update Training Data Point
+        x_test[i] = img
 
     # Process Integer Arrays Into Binary Class Matrices
     y_train = keras.utils.to_categorical(y_train, OUTPUT_SIZE)

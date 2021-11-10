@@ -7,7 +7,8 @@ Milestones:
     The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
 
     Dataset:
-      
+      https://www.kaggle.com/ashwingupta3012/human-faces
+      https://www.kaggle.com/dataturks/face-detection-in-images
 
     Status:
       Data Loading: TESTED
