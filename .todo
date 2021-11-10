@@ -23,6 +23,7 @@ Milestones:
 
     Dataset:
       https://www.kaggle.com/c/facial-keypoints-detection
+      https://www.kaggle.com/drgilermo/face-images-with-marked-landmark-points
 
     Status:
       Data Loading: INCOMPLETE
