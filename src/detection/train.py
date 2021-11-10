@@ -143,7 +143,7 @@ def get_data():
     # Display Status
     print(CR + "Loading dataset...", end = "")
 
-    # TODO, get data 
+    # TODO, get data
 
     # Split Columnar Spam Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)
