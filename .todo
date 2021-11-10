@@ -1,12 +1,19 @@
 FaceFilter
+----------
 
-Milestones
+Milestones:
 
-Facial Recognition Model
+  Facial Detection Model:
+    The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
 
-The facial recognition model will be
+    Dataset:
+      
 
-Facial Mapping Model
+    Status:
+      Data Loading: INCOMPLETE
+      Data Preprocessing: INCOMPLETE
 
+      Model Training: INCOMPLETE
+      Model Validation: INCOMPLETE
 
-Facial Tracking Logic
+      Accuracy - TBD
