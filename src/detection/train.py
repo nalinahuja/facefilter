@@ -18,10 +18,24 @@ NL, CR = "\n", "\r"
 TF_DATA_PATH = "./data"
 TF_SAVE_PATH = "./saved"
 
+# Training Data Size
+TRAIN_SIZE = 0.75
+
 # TensorFlow Model Hyperparameters
 TF_DROP_OUT = 0.20
 TF_NUM_EPOCHS = 10
 TF_LEARNING_RATE = 0.001
+
+# Set Number Of Classes
+OUTPUT_SIZE = 2
+
+# Set Input Dimensions
+INPUT_Y = 60
+INPUT_X = 60
+INPUT_Z = 3
+
+# Set Input Size
+INPUT_SIZE = INPUT_X * INPUT_Y * INPUT_Z
 
 # End Embedded Constants------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -121,7 +135,33 @@ def encode_preds(preds):
 # End Utility Functions------------------------------------------------------------------------------------------------------------------------------------------------
 
 def get_data():
+    # Display Status
+    print(CR + "Loading dataset...", end = "")
 
+    # Check For Spam Data File
+    if (not(os.path.exists(SPAM_FILE))):
+        # Raise Error
+        raise FileNotFoundError("spam data file missing")
+
+    # TODO, get data
+
+    # Read Spam Data Into Memory
+    spam_df = pd.read_csv(SPAM_FILE)
+
+    # Extract Columnar Spam Data
+    x = spam_df["Message"].tolist()
+    y = spam_df["Category"].tolist()
+
+    # Split Columnar Spam Data
+    x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)
+
+    # Convert Input Data Into Numpy Arrays
+    x_train = np.array(x_train)
+    x_test = np.array(x_test)
+
+    # Convert Output Data Into Numpy Arrays
+    y_train = np.array(y_train)
+    y_test = np.array(y_test)
 
     # Display Information About Dataset
     print("Dataset: %s" % DATASET)
@@ -138,15 +178,9 @@ def process_data(raw):
     # Unpack Data From Raw Input
     ((x_train, y_train), (x_test, y_test)) = raw
 
-    # Conditionally Reshape Input Data
-    if (ALGORITHM == "tf_conv"):
-        # Reshape Input Data To Fit Convolutional Networks
-        x_train = x_train.reshape((x_train.shape[0], INPUT_X, INPUT_Y, INPUT_Z))
-        x_test = x_test.reshape((x_test.shape[0], INPUT_X, INPUT_Y, INPUT_Z))
-    else:
-        # Reshape Input Data To Fit Non-Convolutional Networks
-        x_train = x_train.reshape((x_train.shape[0], INPUT_SIZE))
-        x_test = x_test.reshape((x_test.shape[0], INPUT_SIZE))
+    # Reshape Input Data To Fit Convolutional Networks
+    x_train = x_train.reshape((x_train.shape[0], INPUT_X, INPUT_Y, INPUT_Z))
+    x_test = x_test.reshape((x_test.shape[0], INPUT_X, INPUT_Y, INPUT_Z))
 
     # Process Integer Arrays Into Binary Class Matrices
     y_train = keras.utils.to_categorical(y_train, OUTPUT_SIZE)
@@ -167,14 +201,14 @@ def train_model(data):
     x_train, y_train = data
 
     # Display Status
-    print("Training Tensorflow convolutional network...")
+    print("Training Tensorflow convolutional network..." + NL)
 
     # Return Model
     return (build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS))
 
 def run_model(data, model):
     # Display Status
-    print("Running Tensorflow convolutional network...\n")
+    print("Running Tensorflow convolutional network..." + NL)
 
     # Run TensorFlow Convolutional Model On Data
     preds = model.predict(data)
