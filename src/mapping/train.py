@@ -47,6 +47,7 @@ import tensorflow as tf
 from sklearn import metrics
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Set Deterministic Random Seeds
 random.seed(SEED_VALUE)
@@ -146,9 +147,43 @@ def get_data():
     # Display Status
     print(CR + "Loading dataset...", end = "")
 
-    # TODO, load data from TF_DATA_PATH
-    x = type: ndarray
-    y = type: bool
+    # Initalize Input Data List
+    x = []
+
+    # Initalize Output Data List
+    y = []
+
+    # Iterate Over Images In Positive Sample Directory
+    for img in (os.listdir(os.path.join(TF_DATA_PATH, "true"))):
+        # Verify File Is Image
+        if (img.endswith((".jpg", ".png", ".gif", ".jpeg"))):
+            # Load Image Into Memory
+            img = load_img(img)
+
+             # Convert Image To Numpy Array
+            img = img_to_array(img)
+
+            # Add Image Data To List
+            x.append(img)
+
+            # Add Face Existence
+            y.append(True)
+
+    # Iterate Over Images In Negative Sample Directory
+    for img in (os.listdir(os.path.join(TF_DATA_PATH, "false"))):
+        # Verify File Is Image
+        if (img.endswith((".jpg", ".png", ".gif", ".jpeg"))):
+            # Load Image Into Memory
+            img = load_img(img)
+
+             # Convert Image To Numpy Array
+            img = img_to_array(img)
+
+            # Add Image Data To List
+            x.append(img)
+
+            # Add Face Existence
+            y.append(False)
 
     # Split Columnar Spam Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)

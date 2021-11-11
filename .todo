@@ -5,6 +5,9 @@ Milestones:
 
   Facial Detection Model:
     The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
+    
+    Resources:
+      https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf
 
     Dataset:
       https://www.kaggle.com/ashwingupta3012/human-faces
