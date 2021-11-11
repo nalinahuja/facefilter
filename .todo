@@ -11,7 +11,7 @@ Milestones:
       https://www.kaggle.com/dataturks/face-detection-in-images
 
     Status:
-      Data Loading: TESTED
+      Data Loading: UNTESTED
       Data Preprocessing: UNTESTED
 
       Model Training: INCOMPLETE
