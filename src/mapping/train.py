@@ -185,8 +185,8 @@ def get_data():
             # Add Face Existence
             y.append(False)
 
-    # Split Columnar Spam Data
-    x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)
+    # Split Facial Detection Data
+    x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle = True, train_size = TRAIN_SIZE)
 
     # Convert Input Data Into Numpy Arrays
     x_train = np.array(x_train)
