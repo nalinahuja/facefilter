@@ -114,7 +114,7 @@ def build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS, lr = TF_LEARNING_RA
     model.fit(x_train, y_train, epochs = eps)
 
     # Print Separator
-    print("\n" * 1, end = "")
+    print(NL * 1, end = "")
 
     # Return Model
     return (model)
@@ -202,7 +202,7 @@ def get_data():
     print("Shape of y_train dataset: %s." % str(y_train.shape))
     print("Shape of x_test dataset: %s." % str(x_test.shape))
     print("Shape of y_test dataset: %s." % str(y_test.shape))
-    print("\n" * 1, end = "")
+    print(NL * 1, end = "")
 
     # Return Data
     return ((x_train, y_train), (x_test, y_test))
@@ -248,7 +248,7 @@ def process_data(raw):
     print("New shape of x_test dataset: %s." % str(x_test.shape))
     print("New shape of y_train dataset: %s." % str(y_train.shape))
     print("New shape of y_test dataset: %s." % str(y_test.shape))
-    print("\n" * 1, end = "")
+    print(NL * 1, end = "")
 
     # Return Preprocessed Data
     return ((x_train, y_train), (x_test, y_test))
