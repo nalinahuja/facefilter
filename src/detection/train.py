@@ -43,6 +43,14 @@ import random
 import cv2 as cv
 import numpy as np
 import tensorflow as tf
+import pandas as pd
+import json
+import codecs
+from tqdm import tqdm
+import requests
+from PIL import Image
+import io
+from io import BytesIO
 
 from sklearn import metrics
 from tensorflow import keras
@@ -147,8 +155,55 @@ def get_data():
     print(CR + "Loading dataset...", end = "")
 
     # TODO, load data from TF_DATA_PATH
-    x = type: ndarray
-    y = type: bool
+    
+    #x = type: ndarray
+    #y = type: ndarray
+    #https://www.kaggle.com/dataturks/face-detection-in-images
+    #x = pd.read_json("data/face_detection.json")
+    #f = open("data/face_detection.json")
+    #x = json.load(f)
+    fname = "data/face_detection.json"
+    jsonData = []
+    
+    with codecs.open(fname, 'rU') as js:
+        for line in js:
+            jsonData.append(json.loads(line))
+            
+    x = []
+    y = []
+    
+    print("json data 0 : ", jsonData[0])
+
+    i = 0
+    for data in tqdm(jsonData):
+        print("i : ", i)
+        i = i + 1
+        if i < 10:
+            continue
+        print("data content : ", data['content'])
+        response = requests.get(data['content'])
+        print("response : ", response.content)
+        byteImgIO = io.BytesIO()
+        byteImg = Image.open(response.content)
+        byteImg.save(byteImgIO, "PNG")
+        byteImgIO.seek(0)
+        byteImg = byteImgIO.read()
+        img = np.asarray(Image.open(BytesIO(byteImg)))
+        #images.append([img, data["annotation"]])
+        #images.append(img)
+        metadata = data["annotation"]
+        for data in metadata:
+            height = data['imageHeight']
+            width = data['imageWidth']
+            points = data['points']
+            if 'Face' in data['label']:
+                start_x = round(width*points[0]['x'])
+                start_y = round(height*points[0]['y'])
+                end_x = round(width*points[1]['x'])
+                end_y = round(height*points[1]['y'])
+                target = (start_x, start_y, end_x, end_y)
+                x.append(img)
+                y.append(np.asarray(target))
 
     # Split Columnar Spam Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = TRAIN_SIZE)
