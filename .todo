@@ -5,7 +5,7 @@ Milestones:
 
   Facial Detection Model:
     The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
-    
+
     Resources:
       https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf
 
@@ -26,9 +26,12 @@ Milestones:
     The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
 
     Dataset:
-      https://www.kaggle.com/kmader/helen-eye-dataset      
+      https://www.kaggle.com/kmader/helen-eye-dataset
       https://www.kaggle.com/c/facial-keypoints-detection
       https://www.kaggle.com/drgilermo/face-images-with-marked-landmark-points
+
+    Techniques:
+      https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
 
     Status:
       Data Loading: INCOMPLETE
