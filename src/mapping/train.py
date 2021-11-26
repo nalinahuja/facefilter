@@ -152,6 +152,19 @@ def get_data():
 
     # Initalize Output Data List
     y = []
+    
+    #dataset loading
+    features = np.load('file_path for npz')
+    features = features.get(features.files[0])
+    
+    keypoints = pd.read_csv('file_path for csv')
+    
+    new_features = features[keypoints.index.values, :, :, :] #Nums of rows,w, H, Channels
+    new_features = new_features / 255
+    keypoints.reset_index(inplace = True, drop = True)
+    
+    x_train, x_test, y_train, y_test = train_test_split(new_features, keypoints, test_size=0.2)
+    
 
     # Iterate Over Images In Positive Sample Directory
     for img in (os.listdir(os.path.join(TF_DATA_PATH, "true"))):
