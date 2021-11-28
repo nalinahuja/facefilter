@@ -59,6 +59,8 @@ if (__name__ == "__main__"):
         # TODO: Run Frame Through Facial Detector
             # TODO: If bounding boxes exist, map each face in a bounding box
 
+            # TODO: Convert frame to black and white
+            
             # TODO: Add features to face on bounding box
 
         # Show Video Frame
