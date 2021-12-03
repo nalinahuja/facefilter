@@ -54,7 +54,7 @@ except Exception as e:
     # Raise FileNotFoundError
     raise FileNotFoundError("could not load facial detection model")
 
-def detect_face(image):
+def detect_faces(image):
     # Convert Image Colorspace To Grayscale
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
@@ -76,12 +76,9 @@ except Exception as e:
     # Raise FileNotFoundError
     raise FileNotFoundError("could not load facial mapping model")
 
-def map_face(image):
+def map_face(image, x, y, w, h):
     # Convert Image Colorspace To Grayscale
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-
-    # Extract Image Dimension Before Resizing
-    dim = image.shape[0]
 
     # Resize Frame To Mappping Dimensions
     image = cv.resize(image, dsize = MODEL_MAPPING_RESOLUTION, interpolation = cv.INTER_AREA)
@@ -99,7 +96,7 @@ def map_face(image):
     keypoints = face_mapper.predict(image)[0]
 
     # Scale Keypoints To Fit Image Dimensions
-    keypoints = np.multiply(keypoints, dim)
+    keypoints = np.multiply(keypoints, w)
 
     # Round Keypoint Coordinates
     keypoints = np.round(keypoints)
@@ -111,24 +108,29 @@ def map_face(image):
     features = dict()
 
     # Set Nose Tip Coordinates
-    features["nose_tip"] = keypoints[0 : 2]
+    features["nose_tip"] = (keypoints[0] + x, keypoints[1] + y)
 
     # Set Left Eye Coordinates
-    features["left_eye"] = keypoints[2 : 4]
+    features["left_eye"] = (keypoints[2] + x, keypoints[3] + y)
 
     # Set Right Eye Coordinates
-    features["right_eye"] = keypoints[4 : 6]
+    features["right_eye"] = (keypoints[4] + x, keypoints[5] + y)
 
     # Set Mouth Center Coodinates
-    features["mouth_center"] = keypoints[6 : 8]
+    features["mouth_center"] = (keypoints[6] + x, keypoints[7] + y)
 
     # Return Featues Dictionary
     return (features)
 
 # End Facial Mapping Model Loading---------------------------------------------------------------------------------------------------------------------------------------
 
+def overlay_mask(fr, mask, features):
+    # TODO
+    pass
+
 overlay = cv.imread("./masks/glasses.png", -1)
 
+# TESTING ONLY
 def overlay_transparent(background, x, y):
     global overlay
     background_width = background.shape[1]
@@ -178,41 +180,35 @@ if (__name__ == "__main__"):
     # Process Frames
     while (ret):
         # Verify Frame Dimensions
-        if (fr.shape[0] > 0 and fr.shape[1] > 0):
+        if ((fr.shape[0] > 0) and (fr.shape[1] > 0)):
+            # Mirror Frame About Y Axis
+            fr = cv.flip(fr, 1)
+
             # Resize Video Frame To Fixed Dimensions
             fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION, interpolation = cv.INTER_AREA)
 
             # Run Video Frame Through Facial Detector
-            faces = detect_face(fr)
-
-            # Define Features Dictionary
-            features = None
+            faces = detect_faces(fr)
 
             # Iterate Over Faces In Video Frame
             for x, y, w, h in (faces):
-                # Copy Frame As Face
-                face = fr.copy()
-
-                # Crop Frame Into Face
-                face = face[y : y + h, x : x + w]
+                # Crop Into Facial Region
+                face = fr[y : y + h, x : x + w]
 
                 # Verify Face Dimensions
                 if (not(face.shape[0] > 0) or not(face.shape[1] > 0)):
                     # Skip Face
                     continue
 
-                # Run Frame Through Facial Detector
-                features = map_face(face)
+                # Run Facial Region Through Facial Mapper
+                features = map_face(face, x, y, w, h)
 
-                # Iterate Over Feature Keys
-                for key in (features):
-                    # Update Feature X Coordinate
-                    features[key][0] += x
+                """
+                # Overlay Image Masks To Frame Using Feature Coordinates
+                fr = overlay_mask(fr, mask, features)
+                """
 
-                    # Update Feature Y Coordinate
-                    features[key][1] += y
-
-                # Apply Features To Masks
+                # TESTING ONLY
                 fr = overlay_transparent(fr, features["nose_tip"][0] - 200, features["nose_tip"][1] - 100)
 
             # Show Video Frame
