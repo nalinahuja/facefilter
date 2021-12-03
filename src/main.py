@@ -146,14 +146,19 @@ if (SELECTED_MASK == "glasses.png"):
         global mask
 
         # TODO
-        pass
-elif (SELECTED_MASK == "nose.png"):
+
+        # Return Modified Frame
+        return (fr)
+
+elif (SELECTED_MASK == "hat.png"):
     def overlay_mask(fr, features):
         # Set Mask Scope To Global
         global mask
 
         # TODO
-        pass
+
+        # Return Modified Frame
+        return (fr)
 
 # End Image Masking Functions--------------------------------------------------------------------------------------------------------------------------------------------
 
