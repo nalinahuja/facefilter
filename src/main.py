@@ -11,18 +11,19 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 # Print Format Strings
 NL, TB, CR = "\n", "\t", "\r"
 
-# TensorFlow Model Paths
+# Embedded Resource Paths
 FACE_DETECTION_MODEL = "./detection"
 FACE_MAPPING_MODEL = "./mapping"
-
-# Video Mapping Resolution (px, px)
-MODEL_MAPPING_RESOLUTION = (96, 96)
+IMAGE_MASK_PATH = "./masks"
 
 # Video Capture Resolution (px, px)
 VIDEO_CAPTURE_RESOLUTION = (1280, 720)
 
-# Image Mask Names
-IMAGE_MASKS = os.listdir("./masks")
+# Model Mapping Resolution (px, px)
+MODEL_MAPPING_RESOLUTION = (96, 96)
+
+# Selected Mask Name
+SELECTED_MASK = "glasses.png"
 
 # End Embedded Constants-------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -124,46 +125,35 @@ def map_face(image, x, y, w, h):
 
 # End Facial Mapping Model Loading---------------------------------------------------------------------------------------------------------------------------------------
 
-def overlay_mask(fr, mask, features):
-    # TODO
-    pass
+# Print Status
+print("Loading \"%s\" image mask..." % str(SELECTED_MASK) + NL)
 
-overlay = cv.imread("./masks/glasses.png", -1)
+# Form Mask Path
+mask_path = os.path.join(IMAGE_MASK_PATH, SELECTED_MASK)
 
-# TESTING ONLY
-def overlay_transparent(background, x, y):
-    global overlay
-    background_width = background.shape[1]
-    background_height = background.shape[0]
+# Verify Mask Path
+if (not(os.path.exists(mask_path))):
+    # Raise FileNotFoundError
+    raise FileNotFoundError("mask file does not exist")
 
-    if x >= background_width or y >= background_height:
-        return background
+# Initialize Global Image Mask
+mask = cv.imread(mask_path, -1)
 
-    h, w = overlay.shape[0], overlay.shape[1]
+# Conditionally Initialize Overlay Function
+if (SELECTED_MASK == "glasses.png"):
+    def overlay_mask(fr, features):
+        # Set Mask Scope To Global
+        global mask
 
-    if x + w > background_width:
-        w = background_width - x
-        overlay = overlay[:, :w]
+        # TODO
+        pass
+elif (SELECTED_MASK == "nose.png"):
+    def overlay_mask(fr, features):
+        # Set Mask Scope To Global
+        global mask
 
-    if y + h > background_height:
-        h = background_height - y
-        overlay = overlay[:h]
-
-    if overlay.shape[2] < 4:
-        overlay = np.concatenate(
-            [
-                overlay,
-                np.ones((overlay.shape[0], overlay.shape[1], 1), dtype = overlay.dtype) * 255
-            ],
-            axis = 2,
-        )
-
-    overlay_image = overlay[..., :3]
-    mask = overlay[..., 3:] / 255.0
-
-    background[y:y+h, x:x+w] = (1.0 - mask) * background[y:y+h, x:x+w] + mask * overlay_image
-
-    return background
+        # TODO
+        pass
 
 # End Image Masking Functions--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -203,13 +193,8 @@ if (__name__ == "__main__"):
                 # Run Facial Region Through Facial Mapper
                 features = map_face(face, x, y, w, h)
 
-                """
-                # Overlay Image Masks To Frame Using Feature Coordinates
+                # Overlay Image Masks Using Feature Coordinates
                 fr = overlay_mask(fr, mask, features)
-                """
-
-                # TESTING ONLY
-                fr = overlay_transparent(fr, features["nose_tip"][0] - 200, features["nose_tip"][1] - 100)
 
             # Show Video Frame
             cv.imshow("video", fr)
