@@ -44,12 +44,7 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 print("Loading facial detection model..." + NL)
 
 try:
-    """
     # Load Face Detection Model
-    face_detector = keras.models.load_model(os.path.join(FACE_DETECTION_MODEL, "saved"))
-    """
-
-    # TESTING ONLY
     face_detector = cv.CascadeClassifier(os.path.join(FACE_DETECTION_MODEL, "saved", "detection_model.xml"))
 except Exception as e:
     # Raise FileNotFoundError
