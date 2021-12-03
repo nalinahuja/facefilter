@@ -15,11 +15,17 @@ NL, TB, CR = "\n", "\t", "\r"
 FACE_DETECTION_MODEL = "./detection"
 FACE_MAPPING_MODEL = "./mapping"
 
-# Video Capture Resolution
+# Localization Padding (px)
+LOCALIZATION_PADDING = 50
+
+# Video Mapping Resolution (px, px)
+VIDEO_MAPPING_RESOLUTION = (96, 96)
+
+# Video Capture Resolution (px, px)
 VIDEO_CAPTURE_RESOLUTION = (1280, 720)
 
 # Image Mask Names
-MASKS = ["glasses.png", "nose.png", "tongue.png"]
+IMAGE_MASKS = os.listdir("./masks")
 
 # End Embedded Constants-------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -40,26 +46,26 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 print("Loading facial detection model..." + NL)
 
 try:
-    # # Load Face Detection Model
-    # face_detector = keras.models.load_model(os.path.join(FACE_DETECTION_MODEL, "saved"))
+    """
+    # Load Face Detection Model
+    face_detector = keras.models.load_model(os.path.join(FACE_DETECTION_MODEL, "saved"))
+    """
 
     # TESTING ONLY
-    face_detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    face_detector = cv.CascadeClassifier(os.path.join(FACE_DETECTION_MODEL, "saved", "detection_model.xml"))
 except Exception as e:
     # Raise FileNotFoundError
     raise FileNotFoundError("could not load facial detection model")
 
 def detect_face(image):
-     # Convert Image Colorspace To Grayscale
+    # Convert Image Colorspace To Grayscale
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    # Detect Faces In Image
-    faces = face_cascade.detectMultiScale(image, 1.1, 4)
+    # TESTING ONLY
+    faces = face_detector.detectMultiScale(image, 1.1, 4)
 
-
-
-    # TODO
-    pass
+    # Return Face Coordinates
+    return (faces)
 
 # End Facial Detection Model Loading-------------------------------------------------------------------------------------------------------------------------------------
 
@@ -77,6 +83,9 @@ def map_face(image):
     # Convert Image Colorspace To Grayscale
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
+    # Resize Frame To Mappping Dimensions
+    image = cv.resize(image, dsize = VIDEO_MAPPING_RESOLUTION, interpolation = cv.INTER_AREA)
+
     # Normalize Image Pixel Values
     image = np.divide(image, 255)
 
@@ -90,9 +99,9 @@ def map_face(image):
     keypoints = face_mapper.predict(image)[0]
 
     # Scale Keypoints To Fit Image Dimensions
-    keypoints = np.multiply(keypoints, image.shape[0])
-    
-    # Round Keypoint Coordinates  
+    keypoints = np.multiply(keypoints, VIDEO_MAPPING_RESOLUTION[0])
+
+    # Round Keypoint Coordinates
     keypoints = np.round(keypoints)
 
     # Cast Keypoint Values
@@ -140,23 +149,62 @@ if (__name__ == "__main__"):
 
     # Process Frames
     while (ret):
+        # Verify Frame Dimensions
+        if (not(fr.shape[0] > 0) or not(fr.shape[1] > 0)):
+            # Read Frame From Stream
+            ret, fr = stream.read()
+
+            # Skip Frame
+            continue
+
         # Resize Video Frame To Fixed Dimensions
         fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION, interpolation = cv.INTER_AREA)
 
         # Run Video Frame Through Facial Detector
         faces = detect_face(fr)
 
-        # Verify Faces Exist In Frame
+        # Iterate Over Faces In Video Frame
         for x, y, w, h in (faces):
-            # Create Bounding Box For Video Frame
-            cv2.rectangle(fr, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            # Copy Frame As Face
+            face = fr.copy()
 
-            # TODO: Map Each Face In Frame Using Bounding Box
+            # Compute Y Coordinates Of Localization Box
+            y1 = y - LOCALIZATION_PADDING
+            y2 = y + h + LOCALIZATION_PADDING
+
+            # Compute X Coordinates Of Localization Box
+            x1 = x - LOCALIZATION_PADDING
+            x2 = x + w + LOCALIZATION_PADDING
+
+            # Crop Frame Onto Face
+            face = face[y1 : y2, x1 : x2]
+
+            # Verify Face Dimensions
+            if (not(face.shape[0] > 0) or not(face.shape[1] > 0)):
+                # Skip Face
+                continue
+
+            # Run Frame Through Facial Detector
+            features = map_face(face)
+
+            # TODO: Scale Points To Original Frame
+
+            # Map Nose Tip
+            face[features["nose_tip"][1]][features["nose_tip"][0]] = 0
+
+            # Map Left Eye
+            fr[features["left_eye"][1]][features["left_eye"][0]] = 255
+
+            # Map Right Eye
+            fr[features["right_eye"][1]][features["right_eye"][0]] = 255
+
+            # Map Mouth Center
+            fr[features["mouth_center"][1]][features["mouth_center"][0]] = 0
 
             # TODO: Create Masks Using Facial Map Information
-            
+
             # TODO: Apply Masks To Original Webcam Image
-        
+
         # Show Video Frame
         cv.imshow("video", fr)
 
