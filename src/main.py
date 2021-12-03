@@ -225,7 +225,7 @@ if (__name__ == "__main__"):
                     fr = overlay_mask(fr, features)
 
             # Show Video Frame
-            cv.imshow("video", cv.flip(fr, 1))
+            cv.imshow("FaceFilter", cv.flip(fr, 1))
 
             # Check For ESCAPE Key
             if (cv.waitKey(1) == 27):
