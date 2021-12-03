@@ -15,11 +15,8 @@ NL, TB, CR = "\n", "\t", "\r"
 FACE_DETECTION_MODEL = "./detection"
 FACE_MAPPING_MODEL = "./mapping"
 
-# Localization Padding (px)
-LOCALIZATION_PADDING = 50
-
 # Video Mapping Resolution (px, px)
-VIDEO_MAPPING_RESOLUTION = (96, 96)
+MODEL_MAPPING_RESOLUTION = (96, 96)
 
 # Video Capture Resolution (px, px)
 VIDEO_CAPTURE_RESOLUTION = (1280, 720)
@@ -83,8 +80,11 @@ def map_face(image):
     # Convert Image Colorspace To Grayscale
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
+    # Extract Image Dimension Before Resizing
+    dim = image.shape[0]
+
     # Resize Frame To Mappping Dimensions
-    image = cv.resize(image, dsize = VIDEO_MAPPING_RESOLUTION, interpolation = cv.INTER_AREA)
+    image = cv.resize(image, dsize = MODEL_MAPPING_RESOLUTION, interpolation = cv.INTER_AREA)
 
     # Normalize Image Pixel Values
     image = np.divide(image, 255)
@@ -99,7 +99,7 @@ def map_face(image):
     keypoints = face_mapper.predict(image)[0]
 
     # Scale Keypoints To Fit Image Dimensions
-    keypoints = np.multiply(keypoints, VIDEO_MAPPING_RESOLUTION[0])
+    keypoints = np.multiply(keypoints, dim)
 
     # Round Keypoint Coordinates
     keypoints = np.round(keypoints)
@@ -111,29 +111,57 @@ def map_face(image):
     features = dict()
 
     # Set Nose Tip Coordinates
-    features["nose_tip"] = tuple(keypoints[0 : 2])
+    features["nose_tip"] = keypoints[0 : 2]
 
     # Set Left Eye Coordinates
-    features["left_eye"] = tuple(keypoints[2 : 4])
+    features["left_eye"] = keypoints[2 : 4]
 
     # Set Right Eye Coordinates
-    features["right_eye"] = tuple(keypoints[4 : 6])
+    features["right_eye"] = keypoints[4 : 6]
 
     # Set Mouth Center Coodinates
-    features["mouth_center"] = tuple(keypoints[6 : 8])
+    features["mouth_center"] = keypoints[6 : 8]
 
     # Return Featues Dictionary
     return (features)
 
 # End Facial Mapping Model Loading---------------------------------------------------------------------------------------------------------------------------------------
 
-def create_mask():
-    # TODO
-    pass
+overlay = cv.imread("./masks/glasses.png", -1)
 
-def apply_mask():
-    # TODO
-    pass
+def overlay_transparent(background, x, y):
+    global overlay
+    background_width = background.shape[1]
+    background_height = background.shape[0]
+
+    if x >= background_width or y >= background_height:
+        return background
+
+    h, w = overlay.shape[0], overlay.shape[1]
+
+    if x + w > background_width:
+        w = background_width - x
+        overlay = overlay[:, :w]
+
+    if y + h > background_height:
+        h = background_height - y
+        overlay = overlay[:h]
+
+    if overlay.shape[2] < 4:
+        overlay = np.concatenate(
+            [
+                overlay,
+                np.ones((overlay.shape[0], overlay.shape[1], 1), dtype = overlay.dtype) * 255
+            ],
+            axis = 2,
+        )
+
+    overlay_image = overlay[..., :3]
+    mask = overlay[..., 3:] / 255.0
+
+    background[y:y+h, x:x+w] = (1.0 - mask) * background[y:y+h, x:x+w] + mask * overlay_image
+
+    return background
 
 # End Image Masking Functions--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -150,70 +178,50 @@ if (__name__ == "__main__"):
     # Process Frames
     while (ret):
         # Verify Frame Dimensions
-        if (not(fr.shape[0] > 0) or not(fr.shape[1] > 0)):
-            # Read Frame From Stream
-            ret, fr = stream.read()
+        if (fr.shape[0] > 0 and fr.shape[1] > 0):
+            # Resize Video Frame To Fixed Dimensions
+            fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION, interpolation = cv.INTER_AREA)
 
-            # Skip Frame
-            continue
+            # Run Video Frame Through Facial Detector
+            faces = detect_face(fr)
 
-        # Resize Video Frame To Fixed Dimensions
-        fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION, interpolation = cv.INTER_AREA)
+            # Define Features Dictionary
+            features = None
 
-        # Run Video Frame Through Facial Detector
-        faces = detect_face(fr)
+            # Iterate Over Faces In Video Frame
+            for x, y, w, h in (faces):
+                # Copy Frame As Face
+                face = fr.copy()
 
-        # Iterate Over Faces In Video Frame
-        for x, y, w, h in (faces):
-            # Copy Frame As Face
-            face = fr.copy()
+                # Crop Frame Into Face
+                face = face[y : y + h, x : x + w]
 
-            # Compute Y Coordinates Of Localization Box
-            y1 = y - LOCALIZATION_PADDING
-            y2 = y + h + LOCALIZATION_PADDING
+                # Verify Face Dimensions
+                if (not(face.shape[0] > 0) or not(face.shape[1] > 0)):
+                    # Skip Face
+                    continue
 
-            # Compute X Coordinates Of Localization Box
-            x1 = x - LOCALIZATION_PADDING
-            x2 = x + w + LOCALIZATION_PADDING
+                # Run Frame Through Facial Detector
+                features = map_face(face)
 
-            # Crop Frame Onto Face
-            face = face[y1 : y2, x1 : x2]
+                # Iterate Over Feature Keys
+                for key in (features):
+                    # Update Feature X Coordinate
+                    features[key][0] += x
 
-            # Verify Face Dimensions
-            if (not(face.shape[0] > 0) or not(face.shape[1] > 0)):
-                # Skip Face
-                continue
+                    # Update Feature Y Coordinate
+                    features[key][1] += y
 
-            # Run Frame Through Facial Detector
-            features = map_face(face)
+                # Apply Features To Masks
+                fr = overlay_transparent(fr, features["nose_tip"][0] - 200, features["nose_tip"][1] - 100)
 
-            # TODO: Scale Points To Original Frame
-            ys = y // VIDEO_MAPPING_RESOLUTION[1]
-            xs = x // VIDEO_MAPPING_RESOLUTION[0]
+            # Show Video Frame
+            cv.imshow("video", fr)
 
-            # Map Nose Tip
-            face[features["nose_tip"][1] * ys][features["nose_tip"][0] * xs] = 0
-
-            # Map Left Eye
-            face[features["left_eye"][1] * ys][features["left_eye"][0] * xs] = 255
-
-            # Map Right Eye
-            face[features["right_eye"][1] * ys][features["right_eye"][0] * xs] = 255
-
-            # Map Mouth Center
-            face[features["mouth_center"][1] * ys][features["mouth_center"][0] * xs] = 0
-
-            # TODO: Create Masks Using Facial Map Information
-
-            # TODO: Apply Masks To Original Webcam Image
-
-        # Show Video Frame
-        cv.imshow("video", fr)
-
-        # Check For ESCAPE Key
-        if (cv.waitKey(1) == 27):
-            # Break Loop
-            break
+            # Check For ESCAPE Key
+            if (cv.waitKey(1) == 27):
+                # Break Loop
+                break
 
         # Read Frame From Stream
         ret, fr = stream.read()
