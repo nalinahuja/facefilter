@@ -47,7 +47,8 @@ except Exception as e:
     raise FileNotFoundError("could not load facial detection model")
 
 def detect_face(image):
-    # TODO: Implement This Wrapper
+    # TODO
+    pass
 
 # End Facial Detection Model Loading-------------------------------------------------------------------------------------------------------------------------------------
 
@@ -107,9 +108,12 @@ def map_face(image):
 # End Facial Mapping Model Loading---------------------------------------------------------------------------------------------------------------------------------------
 
 def create_mask():
+    # TODO
     pass
 
-def 
+def apply_mask():
+    # TODO
+    pass
 
 # End Image Masking Functions--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -134,7 +138,9 @@ if (__name__ == "__main__"):
 
             # TODO: Map Each Face In Frame Using Bounding Box
 
-            # TODO: Add Masks To Face On Original Image Using Facial Map
+            # TODO: Create Masks Using Facial Map Information
+            
+            # TODO: Apply Masks To Original Webcam Image
 
         # Show Video Frame
         cv.imshow("video", fr)
