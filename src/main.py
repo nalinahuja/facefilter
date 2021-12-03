@@ -160,7 +160,7 @@ if (SELECTED_MASK == "glasses.png"):
         eye_x_delta = abs(left_eye_x - right_eye_x)
 
         # Calculate Image Width Scaling Factor
-        w_scaler = float(eye_x_delta / mask_x_delta) * 1.15
+        w_scaler = float(eye_x_delta / mask_x_delta) * 1.25
 
         # Calculate Mask Width
         mask_w = int((mask_size[0]) * w_scaler)
@@ -175,10 +175,10 @@ if (SELECTED_MASK == "glasses.png"):
         fit_mask = Image.fromarray(cv.resize(mask, dsize = (mask_w, mask_h)))
 
         # Calcualte Mask X Coordinate
-        mx = int(left_eye_x - eye_x_delta - (w_scaler * mask_anchors["left_eye"][0]))
+        mx = int(left_eye_x - eye_x_delta - (w_scaler * (mask_anchors["left_eye"][0] + 20)))
 
         # Calcualte Mask Y Coordinate
-        my = left_eye_y - 20
+        my = left_eye_y - 10
 
         # Overlay Mask On Image Frame
         fr.paste(fit_mask, (mx, my), fit_mask)
