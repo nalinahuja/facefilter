@@ -188,18 +188,20 @@ if (__name__ == "__main__"):
             features = map_face(face)
 
             # TODO: Scale Points To Original Frame
+            ys = y // VIDEO_MAPPING_RESOLUTION[1]
+            xs = x // VIDEO_MAPPING_RESOLUTION[0]
 
             # Map Nose Tip
-            face[features["nose_tip"][1]][features["nose_tip"][0]] = 0
+            face[features["nose_tip"][1] * ys][features["nose_tip"][0] * xs] = 0
 
             # Map Left Eye
-            fr[features["left_eye"][1]][features["left_eye"][0]] = 255
+            face[features["left_eye"][1] * ys][features["left_eye"][0] * xs] = 255
 
             # Map Right Eye
-            fr[features["right_eye"][1]][features["right_eye"][0]] = 255
+            face[features["right_eye"][1] * ys][features["right_eye"][0] * xs] = 255
 
             # Map Mouth Center
-            fr[features["mouth_center"][1]][features["mouth_center"][0]] = 0
+            face[features["mouth_center"][1] * ys][features["mouth_center"][0] * xs] = 0
 
             # TODO: Create Masks Using Facial Map Information
 
