@@ -12,7 +12,8 @@ Milestones:
     Dataset:
       https://www.kaggle.com/ashwingupta3012/human-faces
       https://www.kaggle.com/dataturks/face-detection-in-images
-      https://www.kaggle.com/kmader/helen-eye-dataset
+
+      https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
 
     Status:
       Data Loading: UNTESTED
