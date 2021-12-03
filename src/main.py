@@ -32,6 +32,7 @@ import cv2 as cv
 import numpy as np
 import tensorflow as tf
 
+from PIL import Image
 from sklearn import metrics
 from tensorflow import keras
 
@@ -77,7 +78,7 @@ def map_face(image, x, y, w, h):
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
     # Resize Frame To Mappping Dimensions
-    image = cv.resize(image, dsize = MODEL_MAPPING_RESOLUTION, interpolation = cv.INTER_AREA)
+    image = cv.resize(image, dsize = MODEL_MAPPING_RESOLUTION)
 
     # Normalize Image Pixel Values
     image = np.divide(image, 255)
@@ -140,7 +141,10 @@ if (SELECTED_MASK == "glasses.png"):
     mask_size = (400, 80)
 
     # Initialize Mask Anchors
-    mask_anchors = {"left_eye": (100, 40), "right_eye": (700, 40)}
+    mask_anchors = {"left_eye": (100, 40), "right_eye": (300, 40)}
+
+    # Calculate Mask Anchor X Delta
+    mask_x_delta = abs(mask_anchors["left_eye"][0] - mask_anchors["right_eye"][0])
 
     def overlay_mask(fr, features):
         # Set Mask Scope To Global
@@ -152,9 +156,37 @@ if (SELECTED_MASK == "glasses.png"):
         # Get Right Eye Feature Coordinates
         right_eye_x, right_eye_y = features["right_eye"]
 
+        # Calculate Difference Between X Components Of Eye Coordinates
+        eye_x_delta = abs(left_eye_x - right_eye_x)
 
+        # Calculate Image Width Scaling Factor
+        w_scaler = float(eye_x_delta / mask_x_delta) * 1.15
 
-        # Return Modified Frame
+        # Calculate Mask Width
+        mask_w = int((mask_size[0]) * w_scaler)
+
+        # Calculate Mask Height
+        mask_h = int((mask_size[1] / mask_size[0]) * mask_w)
+
+        # Convert Video Frame To PIL
+        fr = Image.fromarray(fr)
+
+        # Convert Fit Mask To PIL
+        fit_mask = Image.fromarray(cv.resize(mask, dsize = (mask_w, mask_h)))
+
+        # Calcualte Mask X Coordinate
+        mx = int(left_eye_x - eye_x_delta - (w_scaler * mask_anchors["left_eye"][0]))
+
+        # Calcualte Mask Y Coordinate
+        my = left_eye_y - 20
+
+        # Overlay Mask On Image Frame
+        fr.paste(fit_mask, (mx, my), fit_mask)
+
+        # Convert Video Frame To OpenCV
+        fr = np.array(fr)
+
+        # Return Modified Image Frame
         return (fr)
 
 # End Image Masking Functions--------------------------------------------------------------------------------------------------------------------------------------------
@@ -173,11 +205,8 @@ if (__name__ == "__main__"):
     while (ret):
         # Verify Frame Dimensions
         if ((fr.shape[0] > 0) and (fr.shape[1] > 0)):
-            # Mirror Frame About Y Axis
-            fr = cv.flip(fr, 1)
-
             # Resize Video Frame To Fixed Dimensions
-            fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION, interpolation = cv.INTER_AREA)
+            fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION)
 
             # Run Video Frame Through Facial Detector
             faces = detect_faces(fr)
@@ -196,7 +225,7 @@ if (__name__ == "__main__"):
                     fr = overlay_mask(fr, features)
 
             # Show Video Frame
-            cv.imshow("video", fr)
+            cv.imshow("video", cv.flip(fr, 1))
 
             # Check For ESCAPE Key
             if (cv.waitKey(1) == 27):
