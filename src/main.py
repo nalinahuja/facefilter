@@ -186,15 +186,12 @@ if (__name__ == "__main__"):
                 face = fr[y : y + h, x : x + w]
 
                 # Verify Face Dimensions
-                if (not(face.shape[0] > 0) or not(face.shape[1] > 0)):
-                    # Skip Face
-                    continue
+                if ((face.shape[0] > 0) and (face.shape[1] > 0)):
+                    # Run Facial Region Through Facial Mapper
+                    features = map_face(face, x, y, w, h)
 
-                # Run Facial Region Through Facial Mapper
-                features = map_face(face, x, y, w, h)
-
-                # Overlay Image Masks Using Feature Coordinates
-                fr = overlay_mask(fr, features)
+                    # Overlay Image Masks Using Feature Coordinates
+                    fr = overlay_mask(fr, features)
 
             # Show Video Frame
             cv.imshow("video", fr)
