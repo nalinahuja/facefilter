@@ -194,7 +194,7 @@ if (__name__ == "__main__"):
                 features = map_face(face, x, y, w, h)
 
                 # Overlay Image Masks Using Feature Coordinates
-                fr = overlay_mask(fr, mask, features)
+                fr = overlay_mask(fr, features)
 
             # Show Video Frame
             cv.imshow("video", fr)
