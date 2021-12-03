@@ -42,7 +42,7 @@ Milestones:
     The facial masking algorithm will use the keypoints from the facial mapping model to add image masks to the human faces detected in the camera's viewfinder.
 
     Status:
-      Image Mask Creation: INCOMPLETE
-      Image Mask Application: INCOMPLETE
+      Image Mask Creation: COMPLETE
+      Image Mask Application: COMPLETE
 
-      Motion Tracking Performance: TBD
+      Motion Tracking Performance: 1 FPS
