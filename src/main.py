@@ -101,7 +101,7 @@ def map_face(image, x, y, w, h):
     keypoints = keypoints.astype(np.int32)
 
     # Initialize Feature Dictionary
-    features = dict()
+    features = {}
 
     # Set Nose Tip Coordinates
     features["nose_tip"] = (keypoints[0] + x, keypoints[1] + y)
@@ -136,21 +136,23 @@ mask = cv.imread(mask_path, -1)
 
 # Conditionally Initialize Overlay Function
 if (SELECTED_MASK == "glasses.png"):
+    # Initialize Mask Size
+    mask_size = (400, 80)
+
+    # Initialize Mask Anchors
+    mask_anchors = {"left_eye": (100, 40), "right_eye": (700, 40)}
+
     def overlay_mask(fr, features):
         # Set Mask Scope To Global
         global mask
 
-        # TODO
+        # Get Left Eye Feature Coordinates
+        left_eye_x, left_eye_y = features["left_eye"]
 
-        # Return Modified Frame
-        return (fr)
+        # Get Right Eye Feature Coordinates
+        right_eye_x, right_eye_y = features["right_eye"]
 
-elif (SELECTED_MASK == "hat.png"):
-    def overlay_mask(fr, features):
-        # Set Mask Scope To Global
-        global mask
 
-        # TODO
 
         # Return Modified Frame
         return (fr)
