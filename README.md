@@ -1,6 +1,6 @@
 # FaceFilter
 
-Project repository for FaceFilter, an application that adds a tracked image to a human face.
+Project repository for FaceFilter, an application that adds a tracked image mask to a human face.
 
 # Get Started
 
