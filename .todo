@@ -12,6 +12,7 @@ Milestones:
     Dataset:
       https://www.kaggle.com/ashwingupta3012/human-faces
       https://www.kaggle.com/dataturks/face-detection-in-images
+      https://www.kaggle.com/kmader/helen-eye-dataset
 
     Status:
       Data Loading: UNTESTED
@@ -20,24 +21,28 @@ Milestones:
       Model Training: INCOMPLETE
       Model Validation: INCOMPLETE
 
-      Accuracy - TBD%
+      Accuracy: TBD
 
   Facial Mapping Model:
     The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
 
     Dataset:
-      https://www.kaggle.com/kmader/helen-eye-dataset
-      https://www.kaggle.com/c/facial-keypoints-detection
       https://www.kaggle.com/drgilermo/face-images-with-marked-landmark-points
 
-    Techniques:
-      https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
+    Status:
+      Data Loading: COMPLETE
+      Data Preprocessing: COMPLETE
+
+      Model Training: COMPLETE
+      Model Validation: COMPLETE
+
+      Accuracy: 98.58%
+
+  Facial Masking Algorithm:
+    The facial masking algorithm will use the keypoints from the facial mapping model to add image masks to the human faces detected in the camera's viewfinder.
 
     Status:
-      Data Loading: INCOMPLETE
-      Data Preprocessing: INCOMPLETE
+      Image Mask Creation: INCOMPLETE
+      Image Mask Application: INCOMPLETE
 
-      Model Training: INCOMPLETE
-      Model Validation: INCOMPLETE
-
-      Accuracy - TBD%
+      Motion Tracking Performance: TBD

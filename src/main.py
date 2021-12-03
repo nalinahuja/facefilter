@@ -24,7 +24,6 @@ import tensorflow as tf
 
 from sklearn import metrics
 from tensorflow import keras
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # TensorFlow Settings
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
@@ -33,14 +32,14 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 try:
     # Load Face Detection Model
-    FACE_DETECTOR = keras.models.load_model(FACE_DETECTION_MODEL)
+    FACE_DETECTOR = keras.models.load_model(os.path.join(FACE_DETECTION_MODEL, "saved"))
 except Exception as e:
     # Raise FileNotFoundError
     raise FileNotFoundError("could not load facial detection model")
 
 try:
     # Load Facial Mapping Model
-    FACE_MAPPER = keras.models.load_model(FACE_MAPPING_MODEL)
+    FACE_MAPPER = keras.models.load_model(os.path.join(FACE_MAPPING_MODEL, "saved"))
 except Exception as e:
     # Raise FileNotFoundError
     raise FileNotFoundError("could not load facial mapping model")
@@ -56,6 +55,9 @@ if (__name__ == "__main__"):
 
     # Process Frames
     while (ret):
+        # Convert Grame Colorspace To Grayscale
+        gs = cv.cvtColor(fr, cv.COLOR_BGR2GRAY)
+
         # TODO: Run Frame Through Facial Detector
             # TODO: If bounding boxes exist, map each face in a bounding box
 

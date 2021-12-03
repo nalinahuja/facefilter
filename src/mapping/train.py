@@ -12,7 +12,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 SEED_VALUE = 1618
 
 # Print Format Strings
-NL, CR = "\n", "\r"
+NL, TB, CR = "\n", "\t", "\r"
 
 # TensorFlow Model Paths
 TF_DATA_PATH = "./data"
@@ -24,13 +24,16 @@ TRAIN_SIZE = 0.80
 # TensorFlow Model Hyperparameters
 TF_DROP_OUT = 0.25
 TF_NUM_EPOCHS = 10
-TF_BATCH_SIZE = 64
-TF_LEARNING_RATE = 0.005
+TF_BATCH_SIZE = 32
+TF_LEARNING_RATE = 0.01
 
 # Set Input Dimensions
 INPUT_X = 96
 INPUT_Y = 96
 INPUT_Z = 1
+
+# Evaluation Sample Size
+EVALUATION_SIZE = 5
 
 # End Embedded Constants------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -43,7 +46,6 @@ import tensorflow as tf
 from sklearn import metrics
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Set Deterministic Random Seeds
 random.seed(SEED_VALUE)
@@ -55,28 +57,39 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # End Module Imports----------------------------------------------------------------------------------------------------------------------------------------------------
 
-def build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS, lr = TF_LEARNING_RATE, bs = TF_BATCH_SIZE, drop_out = True, drop_rate = TF_DROP_OUT):
+def build_tf_conv_net(x_train, y_train, x_test, y_test, eps = TF_NUM_EPOCHS, lr = TF_LEARNING_RATE, bs = TF_BATCH_SIZE, drop_out = True, drop_rate = TF_DROP_OUT):
     # Initialize New Sequential Model Instance
     model = keras.Sequential()
 
     # Add Convolutional Network Layers
-    model.add(keras.layers.Conv2D(32, kernel_size = [3, 3], activation = tf.nn.relu, input_shape = [INPUT_X, INPUT_Y, INPUT_Z]))
-    model.add(keras.layers.Conv2D(32, kernel_size = [3, 3], activation = tf.nn.relu))
+    model.add(keras.layers.Conv2D(32, kernel_size = [3, 3], activation = tf.nn.tanh, input_shape = [INPUT_X, INPUT_Y, INPUT_Z]))
+    model.add(keras.layers.Conv2D(32, kernel_size = [3, 3], activation = tf.nn.tanh))
 
     # Add Pooling And Normalization Layers
     model.add(keras.layers.MaxPooling2D(pool_size = [2, 2]))
     model.add(keras.layers.BatchNormalization())
+
+    # Add Convolutional Network Layers
+    model.add(keras.layers.Conv2D(64, kernel_size = [3, 3], activation = tf.nn.tanh))
+    model.add(keras.layers.Conv2D(64, kernel_size = [3, 3], activation = tf.nn.tanh))
+
+    # Add Pooling And Normalization Layers
+    model.add(keras.layers.MaxPooling2D(pool_size = [2, 2]))
+    model.add(keras.layers.BatchNormalization())
+    
+    # Add Flattening Layer
+    model.add(keras.layers.Flatten())
+
+    # Add Dense Layer
+    model.add(keras.layers.Dense(256, activation = tf.nn.tanh))
 
     # Check Dropout Setting
     if (drop_out):
         # Add Dropout Layer
         model.add(keras.layers.Dropout(drop_rate, input_shape = [2]))
     
-    # Add Flattening Layer
-    model.add(keras.layers.Flatten())
-
     # Add Dense Layer
-    model.add(keras.layers.Dense(256, activation = tf.nn.relu))
+    model.add(keras.layers.Dense(128, activation = tf.nn.tanh))
 
     # Check Dropout Setting
     if (drop_out):
@@ -84,7 +97,7 @@ def build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS, lr = TF_LEARNING_RA
         model.add(keras.layers.Dropout(drop_rate, input_shape = [2]))
 
     # Add Output Layer
-    model.add(keras.layers.Dense(y_train.shape[1], activation = tf.nn.softmax))
+    model.add(keras.layers.Dense(y_train.shape[1], activation = tf.nn.sigmoid))
 
     # Initialize Loss Function
     loss_func = keras.losses.mse
@@ -96,7 +109,7 @@ def build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS, lr = TF_LEARNING_RA
     model.compile(loss = loss_func, optimizer = opt_func, metrics = ["accuracy"])
 
     # Train Model
-    model.fit(x_train, y_train, epochs = eps)
+    model.fit(x_train, y_train, epochs = eps, batch_size = bs, validation_data = (x_test, y_test), verbose = True)
 
     # Print Separator
     print(NL * 1, end = "")
@@ -126,8 +139,6 @@ def get_data():
         face_keypoints.nose_tip_x.notna() &
         face_keypoints.left_eye_center_x.notna() &
         face_keypoints.right_eye_center_x.notna() &
-        face_keypoints.left_eyebrow_outer_end_x.notna() &
-        face_keypoints.right_eyebrow_outer_end_x.notna() &
         face_keypoints.mouth_center_bottom_lip_x.notna()
     )[0]
 
@@ -142,9 +153,9 @@ def get_data():
     
     # Set Input Data Vector Values
     x[:, :, :, 0] = np.divide(face_images[face_indexes, :, :], 255)
-    
+
     # Initialize Output Data Vector
-    y = np.zeros((sc, 12))
+    y = np.zeros((sc, 8))
     
     # Set Nose Tip Keypoint Values
     y[:, 0] = np.divide(face_keypoints.nose_tip_x[face_indexes], dim)
@@ -158,17 +169,9 @@ def get_data():
     y[:, 4] = np.divide(face_keypoints.right_eye_center_x[face_indexes], dim)
     y[:, 5] = np.divide(face_keypoints.right_eye_center_y[face_indexes], dim)
 
-    # Set Left Eyebrow Outer End Keypoint Values
-    y[:, 6] = np.divide(face_keypoints.left_eyebrow_outer_end_x[face_indexes], dim)
-    y[:, 7] = np.divide(face_keypoints.left_eyebrow_outer_end_y[face_indexes], dim)
-
-    # Set Right Eyebrow Outer End Keypoint Values
-    y[:, 8] = np.divide(face_keypoints.right_eyebrow_outer_end_x[face_indexes], dim)
-    y[:, 9] = np.divide(face_keypoints.right_eyebrow_outer_end_y[face_indexes], dim)
-
     # Set Mouth Center Bottom Lip Keypoint Values
-    y[:, 10] = np.divide(face_keypoints.mouth_center_bottom_lip_x[face_indexes], dim)
-    y[:, 11] = np.divide(face_keypoints.mouth_center_bottom_lip_y[face_indexes], dim)
+    y[:, 6] = np.divide(face_keypoints.mouth_center_bottom_lip_x[face_indexes], dim)
+    y[:, 7] = np.divide(face_keypoints.mouth_center_bottom_lip_y[face_indexes], dim)
 
     # Split Facial Detection Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle = True, train_size = TRAIN_SIZE)
@@ -191,20 +194,23 @@ def get_data():
     # Return Data
     return ((x_train, y_train), (x_test, y_test))
 
-def train_model(data):
+def train_model(train_data, test_data):
     # Unpack Training Data
-    x_train, y_train = data
+    x_train, y_train = train_data
+    
+    # Unpack Testing Data
+    x_test, y_test = test_data
 
     # Display Status
     print("Training Tensorflow convolutional network..." + NL)
 
     # Return Model
-    return (build_tf_conv_net(x_train, y_train, eps = TF_NUM_EPOCHS))
+    return (build_tf_conv_net(x_train, y_train, x_test, y_test, eps = TF_NUM_EPOCHS))
 
 def run_model(data, model):
     # Display Status
-    print("Running Tensorflow convolutional network..." + NL)
-
+    print("Running Tensorflow convolutional network...")
+    
     # Run TensorFlow Convolutional Model On Data
     preds = model.predict(data)
 
@@ -215,21 +221,35 @@ def eval_results(data, y_pred):
     # Unpack Testing Data
     _, y_test = data
 
-    # Format Test Data
-    y_test = np.argmax(y_test, axis = 1)
+    # Randomly Sample Predicted Outputs
+    samples = random.sample(range(len(y_pred)), EVALUATION_SIZE)
 
-    # Format Prediction Data
-    y_pred = np.argmax(y_pred, axis = 1)
+    # Iterate Over Selected Predicted Outputs 
+    for i in (samples):
+        # Compute Sum Of Squared Output Differences
+        l2_error = np.sum(np.square(np.subtract(y_test[i], y_pred[i])))
 
-    # Compute Model Accuracy
-    acc = metrics.accuracy_score(y_test, y_pred)
+        # Round Test Output Vector
+        y_test[i] = np.round(y_test[i], decimals = 3)
 
-    # Display Model Accuracy
-    print("Classifier Accuracy: %.2f%%" % float(acc * 100))
+        # Round Predicted Output Vector
+        y_pred[i] = np.round(y_pred[i], decimals = 3)
+
+        # Print Sample Index
+        print(NL + "Sample Index %d:" % int(i))
+
+        # Print Expected Output
+        print(TB + "Test: " + str(y_test[i]))
+        
+        # Print Predicted Output
+        print(TB + "Pred: " + str(y_pred[i]))
+
+        # Print L2 Error
+        print(TB + "L2 Error: %.2f" % float(l2_error))
 
 # End Pipeline Functions------------------------------------------------------------------------------------------------------------------------------------------------
 
-if (__name__ == '__main__'):
+if (__name__ == "__main__"):
     # Ignore Numpy Warnings
     np.seterr(all = "ignore")
 
@@ -237,7 +257,7 @@ if (__name__ == '__main__'):
     data = get_data()
 
     # Train Model On Processed Data
-    model = train_model(data[0])
+    model = train_model(data[0], data[1])
 
     # Run Model On Processed Data
     preds = run_model(data[1][0], model)
@@ -249,13 +269,13 @@ if (__name__ == '__main__'):
     if (os.path.exists(TF_SAVE_PATH)):
         # Get Model Overwrite Confirmation
         if (len(os.listdir(TF_SAVE_PATH)) and input(NL + "Model file exists, confirm overwrite [y/n]: ").lower() != "y"):
-            # Exit Program
-            sys.exit()
+            # Print Separator
+            print(NL * 1, end = "")
+        else:
+            # Print Status
+            print(NL + "Saving TensorFlow model to disk..." + NL)
 
-        # Print Status
-        print(NL + "Saving TensorFlow model to disk..." + NL)
-
-        # Save Model To Disk
-        model.save(TF_SAVE_PATH)
+            # Save Model To Disk
+            model.save(TF_SAVE_PATH)
 
 # End Main Function-----------------------------------------------------------------------------------------------------------------------------------------------------
