@@ -40,13 +40,24 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 print("Loading facial detection model..." + NL)
 
 try:
-    # Load Face Detection Model
-    face_detector = keras.models.load_model(os.path.join(FACE_DETECTION_MODEL, "saved"))
+    # # Load Face Detection Model
+    # face_detector = keras.models.load_model(os.path.join(FACE_DETECTION_MODEL, "saved"))
+
+    # TESTING ONLY
+    face_detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 except Exception as e:
     # Raise FileNotFoundError
     raise FileNotFoundError("could not load facial detection model")
 
 def detect_face(image):
+     # Convert Image Colorspace To Grayscale
+    image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+
+    # Detect Faces In Image
+    faces = face_cascade.detectMultiScale(image, 1.1, 4)
+
+
+
     # TODO
     pass
 
@@ -132,16 +143,20 @@ if (__name__ == "__main__"):
         # Resize Video Frame To Fixed Dimensions
         fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION, interpolation = cv.INTER_AREA)
 
-        # TODO: Run Video Frame Through Facial Detector
+        # Run Video Frame Through Facial Detector
+        faces = detect_face(fr)
 
-        # TODO: Verify Faces Exist In Frame
+        # Verify Faces Exist In Frame
+        for x, y, w, h in (faces):
+            # Create Bounding Box For Video Frame
+            cv2.rectangle(fr, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
             # TODO: Map Each Face In Frame Using Bounding Box
 
             # TODO: Create Masks Using Facial Map Information
             
             # TODO: Apply Masks To Original Webcam Image
-
+        
         # Show Video Frame
         cv.imshow("video", fr)
 
