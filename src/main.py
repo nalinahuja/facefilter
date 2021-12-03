@@ -22,7 +22,7 @@ VIDEO_CAPTURE_RESOLUTION = (1280, 720)
 # Model Mapping Resolution (px, px)
 MODEL_MAPPING_RESOLUTION = (96, 96)
 
-# Selected Mask Name
+# Selected Mask Filename
 SELECTED_MASK = "glasses.png"
 
 # End Embedded Constants-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ def detect_faces(image):
     # Convert Image Colorspace To Grayscale
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    # TESTING ONLY
+    # Localize Faces In Image
     faces = face_detector.detectMultiScale(image, 1.1, 4)
 
     # Return Face Coordinates
