@@ -9,7 +9,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 # End Imports------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Format Strings
-NL, TB, CR = "\n", "\t", "\r"
+NL, TB, CR, CL = "\n", "\t", "\r", "\033[2K"
 
 # Embedded Resource Paths
 FACE_DETECTION_MODEL = "./detection"
@@ -23,7 +23,7 @@ VIDEO_CAPTURE_RESOLUTION = (1280, 720)
 MODEL_MAPPING_RESOLUTION = (96, 96)
 
 # Selected Mask Filename
-SELECTED_MASK = "hat.png"
+SELECTED_MASK = "glasses.png"
 
 # End Embedded Constants-------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 # End Module Imports-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
-print("Loading facial detection model..." + NL)
+print(NL + CR + "Loading facial detection model...", end = "")
 
 try:
     # Load Face Detection Model
@@ -64,7 +64,7 @@ def detect_faces(image):
 # End Facial Detection Model Loading-------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
-print("Loading facial mapping model..." + NL)
+print(CL + CR + "Loading facial mapping model...", end = "")
 
 try:
     # Load Facial Mapping Model
@@ -122,7 +122,7 @@ def map_face(image, x, y, w, h):
 # End Facial Mapping Model Loading---------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
-print("Loading \"%s\" image mask..." % str(SELECTED_MASK) + NL)
+print(CL + CR + "Loading \"%s\" image mask..." % str(SELECTED_MASK), end = "")
 
 # Form Mask Path
 mask_path = os.path.join(IMAGE_MASK_PATH, SELECTED_MASK)
@@ -246,7 +246,7 @@ elif (SELECTED_MASK == "hat.png"):
 
 if (__name__ == "__main__"):
     # Print Status
-    print("Starting video capture..." + NL)
+    print(CL + CR + "Starting video capture with mask \"%s\"..." % SELECTED_MASK + NL)
 
     # Create Video Stream
     stream = cv.VideoCapture(0)
