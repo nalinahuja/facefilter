@@ -56,7 +56,7 @@ def detect_faces(image):
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
     # Localize Faces In Image
-    faces = face_detector.detectMultiScale(image, scaleFactor = 1.25, minNeighbors = 10)
+    faces = face_detector.detectMultiScale(image, scaleFactor = 1.30, minNeighbors = 5, minSize = MODEL_MAPPING_RESOLUTION, flags = cv.CASCADE_SCALE_IMAGE)
 
     # Return Face Coordinates
     return (faces)
