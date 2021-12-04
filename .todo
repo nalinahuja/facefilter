@@ -22,7 +22,7 @@ Milestones:
       Model Training: INCOMPLETE
       Model Validation: INCOMPLETE
 
-      Accuracy: TBD
+      Accuracy: 75.00%
 
   Facial Mapping Model:
     The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
@@ -37,7 +37,7 @@ Milestones:
       Model Training: COMPLETE
       Model Validation: COMPLETE
 
-      Accuracy: 98.58%
+      Accuracy: 98.50%
 
   Facial Masking Algorithm:
     The facial masking algorithm will use the keypoints from the facial mapping model to add image masks to the human faces detected in the camera's viewfinder.
