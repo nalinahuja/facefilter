@@ -254,41 +254,42 @@ if (__name__ == "__main__"):
     # Read Frame From Stream
     ret, fr = stream.read()
 
-    # Process Frames
-    while (ret):
-        # Verify Frame Dimensions
-        if ((fr.shape[0] > 0) and (fr.shape[1] > 0)):
-            # Resize Video Frame To Fixed Dimensions
-            fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION)
+    try:
+        # Process Frames
+        while (ret):
+            # Verify Frame Dimensions
+            if ((fr.shape[0] > 0) and (fr.shape[1] > 0)):
+                # Resize Video Frame To Fixed Dimensions
+                fr = cv.resize(fr, dsize = VIDEO_CAPTURE_RESOLUTION)
 
-            # Run Video Frame Through Facial Detector
-            faces = detect_faces(fr)
+                # Run Video Frame Through Facial Detector
+                faces = detect_faces(fr)
 
-            # Iterate Over Faces In Video Frame
-            for x, y, w, h in (faces):
-                # Crop Into Facial Region
-                face = fr[y : y + h, x : x + w]
+                # Iterate Over Faces In Video Frame
+                for x, y, w, h in (faces):
+                    # Crop Into Facial Region
+                    face = fr[y : y + h, x : x + w]
 
-                # Verify Face Dimensions
-                if ((face.shape[0] > 0) and (face.shape[1] > 0)):
-                    # Run Facial Region Through Facial Mapper
-                    features = map_face(face, x, y, w, h)
+                    # Verify Face Dimensions
+                    if ((face.shape[0] > 0) and (face.shape[1] > 0)):
+                        # Run Facial Region Through Facial Mapper
+                        features = map_face(face, x, y, w, h)
 
-                    # Overlay Image Masks Using Feature Coordinates
-                    fr = overlay_mask(fr, features)
+                        # Overlay Image Masks Using Feature Coordinates
+                        fr = overlay_mask(fr, features)
 
-            # Show Video Frame
-            cv.imshow("FaceFilter", cv.flip(fr, 1))
+                # Show Video Frame
+                cv.imshow("FaceFilter", cv.flip(fr, 1))
 
-            # Check For ESCAPE Key
-            if (cv.waitKey(1) == 27):
-                # Break Loop
-                break
+                # Check For Escape Key
+                if (cv.waitKey(1) == 27):
+                    # Break Loop
+                    break
 
-        # Read Frame From Stream
-        ret, fr = stream.read()
-
-    # Release Frame Stream
-    stream.release()
+            # Read Frame From Stream
+            ret, fr = stream.read()
+    except KeyboardInterrupt:
+        # Release Frame Stream
+        stream.release()
 
 # End Main---------------------------------------------------------------------------------------------------------------------------------------------------------------
