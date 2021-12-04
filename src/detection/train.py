@@ -128,50 +128,7 @@ def get_data():
     # Display Status
     print(CR + "Loading dataset...", end = "")
 
-    # Extract Input Face Data
-    face_images = np.moveaxis(np.load(os.path.join(TF_DATA_PATH, "face_images.npz"))["face_images"], -1, 0)
-
-    # Load Output Keypoint Data
-    face_keypoints = pd.read_csv(os.path.join(TF_DATA_PATH, "facial_keypoints.csv")).fillna(0)
-
-    # Select Face Keypoint Indexes
-    face_indexes = np.where(
-        face_keypoints.nose_tip_x.notna() &
-        face_keypoints.left_eye_center_x.notna() &
-        face_keypoints.right_eye_center_x.notna() &
-        face_keypoints.mouth_center_bottom_lip_x.notna()
-    )[0]
-
-    # Get Image Side Dimension
-    dim = face_images.shape[1]
-
-    # Get Sample Count
-    sc = face_indexes.shape[0]
-
-    # Initialize Input Data Vector
-    x = np.zeros((sc, dim, dim, 1))
-
-    # Set Input Data Vector Values
-    x[:, :, :, 0] = np.divide(face_images[face_indexes, :, :], 255)
-
-    # Initialize Output Data Vector
-    y = np.zeros((sc, 8))
-
-    # Set Nose Tip Keypoint Values
-    y[:, 0] = np.divide(face_keypoints.nose_tip_x[face_indexes], dim)
-    y[:, 1] = np.divide(face_keypoints.nose_tip_y[face_indexes], dim)
-
-    # Set Left Eye Center Keypoint Values
-    y[:, 2] = np.divide(face_keypoints.left_eye_center_x[face_indexes], dim)
-    y[:, 3] = np.divide(face_keypoints.left_eye_center_y[face_indexes], dim)
-
-    # Set Right Eye Center Keypoint Values
-    y[:, 4] = np.divide(face_keypoints.right_eye_center_x[face_indexes], dim)
-    y[:, 5] = np.divide(face_keypoints.right_eye_center_y[face_indexes], dim)
-
-    # Set Mouth Center Bottom Lip Keypoint Values
-    y[:, 6] = np.divide(face_keypoints.mouth_center_bottom_lip_x[face_indexes], dim)
-    y[:, 7] = np.divide(face_keypoints.mouth_center_bottom_lip_y[face_indexes], dim)
+    # TODO: Write Image Loading Here
 
     # Split Facial Detection Data
     x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle = True, train_size = TRAIN_SIZE)
