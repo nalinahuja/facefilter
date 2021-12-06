@@ -189,7 +189,7 @@ if (SELECTED_MASK == "glasses.png"):
         # Return Modified Image Frame
         return (fr)
 
-elif (SELECTED_MASK == "hat.png"):
+elif (SELECTED_MASK == "santa.png"):
     # Initialize Mask Size
     mask_size = (820, 570)
 
