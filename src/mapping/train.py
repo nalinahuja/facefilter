@@ -76,7 +76,7 @@ def build_tf_conv_net(x_train, y_train, x_test, y_test, eps = TF_NUM_EPOCHS, lr 
     # Add Pooling And Normalization Layers
     model.add(keras.layers.MaxPooling2D(pool_size = [2, 2]))
     model.add(keras.layers.BatchNormalization())
-    
+
     # Add Flattening Layer
     model.add(keras.layers.Flatten())
 
@@ -87,7 +87,7 @@ def build_tf_conv_net(x_train, y_train, x_test, y_test, eps = TF_NUM_EPOCHS, lr 
     if (drop_out):
         # Add Dropout Layer
         model.add(keras.layers.Dropout(drop_rate, input_shape = [2]))
-    
+
     # Add Dense Layer
     model.add(keras.layers.Dense(128, activation = tf.nn.tanh))
 
@@ -127,7 +127,7 @@ def get_data():
 
     # Display Status
     print(CR + "Loading dataset...", end = "")
-    
+
     # Extract Input Face Data
     face_images = np.moveaxis(np.load(os.path.join(TF_DATA_PATH, "face_images.npz"))["face_images"], -1, 0)
 
@@ -147,20 +147,20 @@ def get_data():
 
     # Get Sample Count
     sc = face_indexes.shape[0]
-    
+
     # Initialize Input Data Vector
     x = np.zeros((sc, dim, dim, 1))
-    
+
     # Set Input Data Vector Values
     x[:, :, :, 0] = np.divide(face_images[face_indexes, :, :], 255)
 
     # Initialize Output Data Vector
     y = np.zeros((sc, 8))
-    
+
     # Set Nose Tip Keypoint Values
     y[:, 0] = np.divide(face_keypoints.nose_tip_x[face_indexes], dim)
     y[:, 1] = np.divide(face_keypoints.nose_tip_y[face_indexes], dim)
-    
+
     # Set Left Eye Center Keypoint Values
     y[:, 2] = np.divide(face_keypoints.left_eye_center_x[face_indexes], dim)
     y[:, 3] = np.divide(face_keypoints.left_eye_center_y[face_indexes], dim)
@@ -197,7 +197,7 @@ def get_data():
 def train_model(train_data, test_data):
     # Unpack Training Data
     x_train, y_train = train_data
-    
+
     # Unpack Testing Data
     x_test, y_test = test_data
 
@@ -210,7 +210,7 @@ def train_model(train_data, test_data):
 def run_model(data, model):
     # Display Status
     print("Running Tensorflow convolutional network...")
-    
+
     # Run TensorFlow Convolutional Model On Data
     preds = model.predict(data)
 
@@ -224,7 +224,7 @@ def eval_results(data, y_pred):
     # Randomly Sample Predicted Outputs
     samples = random.sample(range(len(y_pred)), EVALUATION_SIZE)
 
-    # Iterate Over Selected Predicted Outputs 
+    # Iterate Over Selected Predicted Outputs
     for i in (samples):
         # Compute Sum Of Squared Output Differences
         l2_error = np.sum(np.square(np.subtract(y_test[i], y_pred[i])))
@@ -240,7 +240,7 @@ def eval_results(data, y_pred):
 
         # Print Expected Output
         print(TB + "Test: " + str(y_test[i]))
-        
+
         # Print Predicted Output
         print(TB + "Pred: " + str(y_pred[i]))
 
@@ -265,17 +265,20 @@ if (__name__ == "__main__"):
     # Evaluate Model Results
     eval_results(data[1], preds)
 
-    # Check For Model File
-    if (os.path.exists(TF_SAVE_PATH)):
-        # Get Model Overwrite Confirmation
-        if (len(os.listdir(TF_SAVE_PATH)) and input(NL + "Model file exists, confirm overwrite [y/n]: ").lower() != "y"):
-            # Print Separator
-            print(NL * 1, end = "")
-        else:
-            # Print Status
-            print(NL + "Saving TensorFlow model to disk..." + NL)
+    # Check For Model Save Path
+    if (not(os.path.exists(TF_SAVE_PATH))):
+        # Create Model Save Path
+        os.mkdir(TF_SAVE_PATH)
 
-            # Save Model To Disk
-            model.save(TF_SAVE_PATH)
+    # Get Model Overwrite Confirmation
+    if (len(os.listdir(TF_SAVE_PATH)) and input(NL + "Model file exists, confirm overwrite [y/n]: ").lower() != "y"):
+        # Print Separator
+        print(NL * 1, end = "")
+    else:
+        # Print Status
+        print(NL + "Saving TensorFlow model to disk..." + NL)
+
+        # Save Model To Disk
+        model.save(TF_SAVE_PATH)
 
 # End Main Function-----------------------------------------------------------------------------------------------------------------------------------------------------
