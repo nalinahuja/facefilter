@@ -10,19 +10,10 @@ Milestones:
       https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf
 
     Dataset:
-      https://www.kaggle.com/ashwingupta3012/human-faces
-      https://www.kaggle.com/dataturks/face-detection-in-images
-
       https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
 
     Status:
-      Data Loading: UNTESTED
-      Data Preprocessing: UNTESTED
-
-      Model Training: INCOMPLETE
-      Model Validation: INCOMPLETE
-
-      Accuracy: 75.00%
+      Accuracy: 85.00%
 
   Facial Mapping Model:
     The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
