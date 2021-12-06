@@ -242,6 +242,59 @@ elif (SELECTED_MASK == "hat.png"):
         # Return Modified Image Frame
         return (fr)
 
+elif (SELECTED_MASK == "saiyan.png"):
+    # Initialize Mask Size
+    mask_size = (648, 760)
+
+    # Initialize Mask Anchors
+    mask_anchors = {"left_eye": (236, 611), "right_eye": (404, 611)}
+
+    # Calculate Mask Anchor X Delta
+    mask_x_delta = abs(mask_anchors["left_eye"][0] - mask_anchors["right_eye"][0])
+
+    def overlay_mask(fr, features):
+        # Set Mask Scope To Global
+        global mask
+
+        # Get Left Eye Feature Coordinates
+        left_eye_x, left_eye_y = features["left_eye"]
+
+        # Get Right Eye Feature Coordinates
+        right_eye_x, right_eye_y = features["right_eye"]
+
+        # Calculate Difference Between X Components Of Eye Coordinates
+        eye_x_delta = abs(left_eye_x - right_eye_x)
+
+        # Calculate Image Width Scaling Factor
+        w_scaler = float(eye_x_delta / mask_x_delta) * 1.25
+
+        # Calculate Mask Width
+        mask_w = int((mask_size[0]) * w_scaler)
+
+        # Calculate Mask Height
+        mask_h = int((mask_size[1] / mask_size[0]) * mask_w)
+
+        # Convert Video Frame To PIL
+        fr = Image.fromarray(fr)
+
+        # Convert Fit Mask To PIL
+        fit_mask = Image.fromarray(cv.resize(mask, dsize = (mask_w, mask_h)))
+
+        # Calcualte Mask X Coordinate
+        mx = int(left_eye_x - eye_x_delta - (w_scaler * (mask_anchors["left_eye"][0] + 20)))
+
+        # Calcualte Mask Y Coordinate
+        my = left_eye_y - mask_h + 25
+
+        # Overlay Mask On Image Frame
+        fr.paste(fit_mask, (mx, my), fit_mask)
+
+        # Convert Video Frame To OpenCV
+        fr = np.array(fr)
+
+        # Return Modified Image Frame
+        return (fr)
+
 # End Image Masking Functions-------------------------------------------------------------------------------------------------------------------------------------------
 
 if (__name__ == "__main__"):
