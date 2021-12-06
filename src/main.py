@@ -61,7 +61,7 @@ def detect_faces(image):
     # Return Face Coordinates
     return (faces)
 
-# End Facial Detection Model Loading------------------------------------------------------------------------------------------------------------------------------------
+# End Facial Detection Model---------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
 print(CL + CR + "Loading facial mapping model...", end = "")
@@ -119,7 +119,7 @@ def map_face(image, x, y, w, h):
     # Return Featues Dictionary
     return (features)
 
-# End Facial Mapping Model Loading--------------------------------------------------------------------------------------------------------------------------------------
+# End Facial Mapping Model-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
 print(CL + CR + "Loading \"%s\" image mask..." % str(SELECTED_MASK), end = "")
