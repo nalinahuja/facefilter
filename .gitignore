@@ -7,5 +7,5 @@
 .localized
 
 # Workspace Files
-data
-saved
+/src/mapping/data
+/src/mapping/saved
