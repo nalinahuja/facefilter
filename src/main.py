@@ -23,7 +23,7 @@ VIDEO_CAPTURE_RESOLUTION = (1280, 720)
 MODEL_MAPPING_RESOLUTION = (96, 96)
 
 # Selected Mask Filename
-SELECTED_MASK = "glasses.png"
+SELECTED_MASK = "saiyan.png"
 
 # End Embedded Constants------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -266,13 +266,13 @@ elif (SELECTED_MASK == "saiyan.png"):
         eye_x_delta = abs(left_eye_x - right_eye_x)
 
         # Calculate Image Width Scaling Factor
-        w_scaler = float(eye_x_delta / mask_x_delta) * 1.25
+        w_scaler = float(eye_x_delta / mask_x_delta)
 
         # Calculate Mask Width
-        mask_w = int((mask_size[0]) * w_scaler)
+        mask_w = int((mask_size[0]) * w_scaler * 0.80)
 
         # Calculate Mask Height
-        mask_h = int((mask_size[1] / mask_size[0]) * mask_w)
+        mask_h = int((mask_size[1] * 0.80 / mask_size[0]) * mask_w)
 
         # Convert Video Frame To PIL
         fr = Image.fromarray(fr)
@@ -281,10 +281,10 @@ elif (SELECTED_MASK == "saiyan.png"):
         fit_mask = Image.fromarray(cv.resize(mask, dsize = (mask_w, mask_h)))
 
         # Calcualte Mask X Coordinate
-        mx = int(left_eye_x - eye_x_delta - (w_scaler * (mask_anchors["left_eye"][0] + 20)))
+        mx = int(left_eye_x - eye_x_delta - (w_scaler * (mask_anchors["left_eye"][0] - 80)))
 
         # Calcualte Mask Y Coordinate
-        my = left_eye_y - mask_h + 25
+        my = left_eye_y - mask_h
 
         # Overlay Mask On Image Frame
         fr.paste(fit_mask, (mx, my), fit_mask)
