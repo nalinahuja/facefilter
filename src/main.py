@@ -23,7 +23,7 @@ VIDEO_CAPTURE_RESOLUTION = (1280, 720)
 MODEL_MAPPING_RESOLUTION = (96, 96)
 
 # Selected Mask Filename
-SELECTED_MASK = "flame.png"
+SELECTED_MASK = "glasses.png"
 
 # End Embedded Constants------------------------------------------------------------------------------------------------------------------------------------------------
 
