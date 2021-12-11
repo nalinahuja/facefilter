@@ -130,7 +130,7 @@ mask_path = os.path.join(IMAGE_MASK_PATH, SELECTED_MASK)
 # Verify Mask Path
 if (not(os.path.exists(mask_path))):
     # Raise FileNotFoundError
-    raise FileNotFoundError("mask file does not exist")
+    raise FileNotFoundError("image mask does not exist")
 
 # Initialize Global Image Mask
 mask = cv.imread(mask_path, -1)
