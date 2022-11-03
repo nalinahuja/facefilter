@@ -185,10 +185,10 @@ def get_data():
     y_test = np.array(y_test)
 
     # Display Information About Dataset
-    print(CR + "Shape of x_train dataset: %s" % str(x_train.shape))
-    print("Shape of y_train dataset: %s" % str(y_train.shape))
-    print("Shape of x_test dataset: %s" % str(x_test.shape))
-    print("Shape of y_test dataset: %s" % str(y_test.shape))
+    print(CR + f"Shape of x_train dataset: {x_train.shape}")
+    print(f"Shape of y_train dataset: {y_train.shape}")
+    print(f"Shape of x_test dataset: {x_test.shape}")
+    print(f"Shape of y_test dataset: {y_test.shape}")
     print(NL * 1, end = "")
 
     # Return Data
@@ -236,16 +236,16 @@ def eval_results(data, y_pred):
         y_pred[i] = np.round(y_pred[i], decimals = 3)
 
         # Print Sample Index
-        print(NL + "Sample Index %d:" % int(i))
+        print(NL + f"Sample Index {i:.0f}:")
 
         # Print Expected Output
-        print(TB + "Test: " + str(y_test[i]))
+        print(TB + f"Test: {y_test[i]}")
 
         # Print Predicted Output
-        print(TB + "Pred: " + str(y_pred[i]))
+        print(TB + f"Pred: {y_pred[i]}")
 
         # Print L2 Error
-        print(TB + "L2 Error: %.2f" % float(l2_error))
+        print(TB + f"L2 Error: {l2_error:.2f}")
 
 # End Pipeline Functions------------------------------------------------------------------------------------------------------------------------------------------------
 

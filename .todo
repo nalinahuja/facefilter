@@ -1,40 +1,29 @@
 FaceFilter
 ----------
 
-Milestones:
+Facial Detection Model:
+  The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
 
-  Facial Detection Model:
-    The facial detection model will be programmed to detect if a human face is within the camera's viewfinder and trigger the facial mapping model if a human face is detected.
+  Resources:
+    https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf
 
-    Resources:
-      https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf
+  Dataset:
+    https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
 
-    Dataset:
-      https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
+  Status:
+    Accuracy: 85.00%
 
-    Status:
-      Accuracy: 85.00%
+Facial Mapping Model:
+  The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
 
-  Facial Mapping Model:
-    The facial mapping model will be programmed to map a human face in an image given that it knows there is a human face in the camera's viewfinder. The mapping of the human face will be used to add features to the human face that track the motion of the face.
+  Dataset:
+    https://www.kaggle.com/drgilermo/face-images-with-marked-landmark-points
 
-    Dataset:
-      https://www.kaggle.com/drgilermo/face-images-with-marked-landmark-points
+  Status:
+    Accuracy: 98.50%
 
-    Status:
-      Data Loading: COMPLETE
-      Data Preprocessing: COMPLETE
+Facial Masking Algorithm:
+  The facial masking algorithm will use the keypoints from the facial mapping model to add image masks to all human faces detected in the camera's viewfinder.
 
-      Model Training: COMPLETE
-      Model Validation: COMPLETE
-
-      Accuracy: 98.50%
-
-  Facial Masking Algorithm:
-    The facial masking algorithm will use the keypoints from the facial mapping model to add image masks to the human faces detected in the camera's viewfinder.
-
-    Status:
-      Image Mask Creation: COMPLETE
-      Image Mask Application: COMPLETE
-
-      Motion Tracking Performance: 5 FPS
+  Status:
+    Motion Tracking Performance: 15 FPS

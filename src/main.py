@@ -12,9 +12,9 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 NL, TB, CR, CL = "\n", "\t", "\r", "\033[2K"
 
 # Embedded Resource Paths
-FACE_DETECTION_MODEL = "./detection"
-FACE_MAPPING_MODEL = "./mapping"
 IMAGE_MASK_PATH = "./masks"
+FACE_MAPPING_MODEL = "./mapping"
+FACE_DETECTION_MODEL = "./detection"
 
 # Video Capture Resolution (px, px)
 VIDEO_CAPTURE_RESOLUTION = (1280, 720)
@@ -58,7 +58,7 @@ def detect_faces(image):
     # Localize Faces In Image
     faces = face_detector.detectMultiScale(image, scaleFactor = 1.30, minNeighbors = 5, minSize = MODEL_MAPPING_RESOLUTION, flags = cv.CASCADE_SCALE_IMAGE)
 
-    # Return Face Coordinates
+    # Return Facial Coordinates
     return (faces)
 
 # End Facial Detection Model---------------------------------------------------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ def map_face(image, x, y, w, h):
 # End Facial Mapping Model-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
-print(CL + CR + "Loading \"%s\" image mask..." % str(SELECTED_MASK), end = "")
+print(CL + CR + f"Loading '{SELECTED_MASK}' image mask...", end = "")
 
 # Form Mask Path
 mask_path = os.path.join(IMAGE_MASK_PATH, SELECTED_MASK)
@@ -352,7 +352,7 @@ elif (SELECTED_MASK == "flame.png"):
 
 if (__name__ == "__main__"):
     # Print Status
-    print(CL + CR + "Starting video capture with mask \"%s\"..." % SELECTED_MASK + NL)
+    print(CL + CR + f"Starting video capture with mask '{SELECTED_MASK}'..." + NL)
 
     # Create Video Stream
     stream = cv.VideoCapture(0)
@@ -373,12 +373,12 @@ if (__name__ == "__main__"):
 
                 # Iterate Over Faces In Video Frame
                 for x, y, w, h in (faces):
-                    # Crop Into Facial Region
+                    # Extract Region Of Interest
                     face = fr[y : y + h, x : x + w]
 
                     # Verify Face Dimensions
                     if ((face.shape[0] > 0) and (face.shape[1] > 0)):
-                        # Run Facial Region Through Facial Mapper
+                        # Run Region Of Interest Through Facial Mapper
                         features = map_face(face, x, y, w, h)
 
                         # Overlay Image Masks Using Feature Coordinates
