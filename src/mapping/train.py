@@ -135,12 +135,12 @@ def get_data():
     face_keypoints = pd.read_csv(os.path.join(TF_DATA_PATH, "facial_keypoints.csv")).fillna(0)
 
     # Select Face Keypoint Indexes
-    face_indexes = np.where(
+    face_indexes, *_ = np.where(
         face_keypoints.nose_tip_x.notna() &
         face_keypoints.left_eye_center_x.notna() &
         face_keypoints.right_eye_center_x.notna() &
         face_keypoints.mouth_center_bottom_lip_x.notna()
-    )[0]
+    )
 
     # Get Image Side Dimension
     dim = face_images.shape[1]

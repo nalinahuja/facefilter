@@ -26,4 +26,4 @@ Facial Masking Algorithm:
   The facial masking algorithm will use the keypoints from the facial mapping model to add image masks to all human faces detected in the camera's viewfinder.
 
   Status:
-    Motion Tracking Performance: 15 FPS
+    Motion Tracking Performance: 20 FPS

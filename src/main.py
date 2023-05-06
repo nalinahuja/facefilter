@@ -61,7 +61,7 @@ def detect_faces(image):
     # Return Facial Coordinates
     return (faces)
 
-# End Facial Detection Model---------------------------------------------------------------------------------------------------------------------------------------------
+# End Facial Detection Model--------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
 print(CL + CR + "Loading facial mapping model...", end = "")
@@ -90,7 +90,7 @@ def map_face(image, x, y, w, h):
     image = np.expand_dims(image, axis = 0)
 
     # Run Image Through Facial Mapping Model
-    keypoints = face_mapper.predict(image)[0]
+    keypoints, *_ = face_mapper.predict(image)
 
     # Scale Keypoints To Fit Image Dimensions
     keypoints = np.multiply(keypoints, w)
@@ -99,7 +99,7 @@ def map_face(image, x, y, w, h):
     keypoints = np.round(keypoints)
 
     # Cast Keypoint Values
-    keypoints = keypoints.astype(np.int32)
+    keypoints = np.int32(keypoints)
 
     # Initialize Feature Dictionary
     features = {}
@@ -119,7 +119,7 @@ def map_face(image, x, y, w, h):
     # Return Featues Dictionary
     return (features)
 
-# End Facial Mapping Model-----------------------------------------------------------------------------------------------------------------------------------------------
+# End Facial Mapping Model----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Print Status
 print(CL + CR + f"Loading '{SELECTED_MASK}' image mask...", end = "")
